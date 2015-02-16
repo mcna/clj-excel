@@ -1,5 +1,6 @@
-(defproject clj-excel "0.0.3"
-  :description "Excel bindings for Clojure, based on Apache POI."
+(defproject mcna-excel "0.0.4"
+  :description "Excel bindings for Clojure, based on Apache POI.
+                Fork of clj-excel 0.0.1"
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.apache.poi/poi "3.11"]
                  [org.apache.poi/poi-ooxml "3.11"]]
