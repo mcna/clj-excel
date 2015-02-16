@@ -286,9 +286,7 @@
   (when-let [formula (m :formula)]
     (.setCellFormula cell formula))
   (when-let [comment (m :comment)]
-    (.setCellComment cell (create-comment cell comment)))
-  (when (m :autosize?)
-    (.autoSizeColumn (.getSheet cell) (.getColumnIndex cell) true)))
+    (.setCellComment cell (create-comment cell comment))))
 
 (defn set-cell
   "Set cell at specified location with value."
@@ -313,12 +311,24 @@
                 (.createSheet wb))]
     (merge-rows sheet 0 rows)))
 
+(defn autosize [^Workbook wb sheet-name top-row]
+  (let [^Sheet sheet (.getSheet wb sheet-name)
+        ^Row sheet-row (.getRow sheet 0)]
+    (when sheet-row
+      (mapv
+        (fn [cell column]
+          (when (:autosize? cell)
+            (.autoSizeColumn sheet column)))
+        top-row
+        (range (.getFirstCellNum sheet-row) (.getLastCellNum sheet-row))))))
+
 (defn build-workbook
   "Build workbook from map of sheet names to multi dimensional seqs (ie a seq of seq)."
   ([wb wb-map]
      (let [cache (caching-style-builder wb)]
        (doseq [[sheetname rows] wb-map]
-         (build-sheet wb (str sheetname) (create-sheet-data-style cache rows)))
+         (build-sheet wb (str sheetname) (create-sheet-data-style cache rows))
+         (autosize wb (str sheetname) (first rows)))
        wb))
   ([wb-map] (build-workbook (workbook-xssf) wb-map)))
 
